@@ -1,23 +1,13 @@
-const cfg = {
+// Create the chessboard
 
+var config = {
+    draggable: true,
+    position: 'start',
+    onDragStart: onDragStart,
+    onDrop: onDrop,
+    onMouseoutSquare: onMouseoutSquare,
+    onMouseoverSquare: onMouseoverSquare,
+    onSnapEnd: onSnapEnd
 }
 
-var board = null
-var game = new Chess()
-
-function makeRandomMove() {
-    var possibleMoves = game.moves()
-
-    // exit if the game is over
-    if (game.game_over()) return
-
-    var randomIdx = Math.floor(Math.random() * possibleMoves.length)
-    game.move(possibleMoves[randomIdx])
-    board.position(game.fen())
-
-    window.setTimeout(makeRandomMove, 500)
-}
-
-board = Chessboard('board', 'start')
-
-window.setTimeout(makeRandomMove, 500)
+board = Chessboard('board', config)
