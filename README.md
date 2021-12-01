@@ -6,3 +6,8 @@ A Chess Agent utilizing Minimax and Alpha-Beta pruning
 - Joshua Challenger
 - Eren Sulutas
 
+## Tools 
+
+- [chess.js](https://github.com/jhlywa/chess.js)
+- [chessboard.js](https://www.chessboardjs.com/) for embedding the chessboard
+- jQuery
