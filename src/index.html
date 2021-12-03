@@ -18,7 +18,18 @@
             <div id="board" style="width: 800px;"></div>
         </div>
     </div>
-    <div class="info" style="margin-top: 10px;">
+    <div class="settings" style="margin: 10px">
+        <select name="depth" id="depth">
+            <option value="2">Depth 2</option>
+            <option selected value="3">Depth 3</option>
+            <option value="4">Depth 4</option>
+        </select>
+        <select name="mobilitySearch" id="mobilitySearch">
+            <option selected value="true">Mobility Calculation On</option>
+            <option value="false">Mobility Calculation Off</option>
+        </select>
+    </div>
+    <div class="info" style="margin: 10px;">
         <h5>Moves:</h5>
         <div id="pgn"></div>
         <h5>Number of Evaluations:</h5>

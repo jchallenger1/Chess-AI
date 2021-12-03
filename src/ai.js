@@ -1,7 +1,29 @@
 // Determines the optimal move for the agent using minimax and alpha-beta pruning
 
+
+// SETTINGS
+
+let searchDepth = 3;
+let mobilitySearch = true;
+
+// END SETTINGS
+
 let numEvaluations = 0;
+let moveSet = [];
+
+
+function changeSettings() {
+    let newSearchDepth = document.querySelector("#depth").selectedOptions[0].value;
+    let newMobility = document.querySelector("#mobilitySearch").selectedOptions[0].value;
+    console.log("Depth: " + newSearchDepth);
+    console.log("Mobility: " + newMobility);
+    searchDepth = newSearchDepth;
+    mobilitySearch = newMobility;
+}
+
+
 function makeAgentMove() {
+    changeSettings();
     var possibleMoves = game.moves()
 
     numEvaluations = 0;
@@ -10,11 +32,8 @@ function makeAgentMove() {
     // game over
     if (possibleMoves.length === 0) return
 
-    // maximum search depth
-    let depth = 3;
-
     // retrieve the move with the best outcome for black
-    let move = getBestMove(game, depth);
+    let move = getBestMove(game);
     console.log('best move ' + move);
 
     game.move(move);
@@ -47,6 +66,7 @@ function makeEvaluation(game) {
     let gameboard = fen[0];
     let isBlackTurn = fen[1] == 'b';
 
+    // Special case if we can get into a checkmate, we should obviously get to that state
     if (game.in_checkmate()) {
         console.log("checkmate case " + gameboard);
         if (isBlackTurn) {  // white checkmated black
@@ -56,18 +76,32 @@ function makeEvaluation(game) {
         }
     }
 
+    // Get the weighted material calculation
     let sum = 0;
     for (letter of gameboard) {
         if (letter in evaluations)
             sum += evaluations[letter]
     }
+    
+    // Update number of evaluations
+    ++numEvaluations;        
 
-    ++numEvaluations;
-    return sum;
+    // Returns the material sum evaluation
+    if (!mobilitySearch) return sum
+    
+    // Get mobility calculation
+    let mobility = 0;
+    if (moveSet) {
+        mobility = moveSet.length;
+        if (isBlackTurn) mobility = -mobility;
+    }
+
+    // Return the material sum with added mobility multiplier
+    return sum + mobility * 0.01;
 }
 
 // Function that determines the best move through comparing minimax values
-function getBestMove(game, depth) {
+function getBestMove(game) {
     let possibleMoves = game.moves();
     let bestMove = possibleMoves[0];
     let bestMoveEvaluation = -999999;
@@ -79,7 +113,7 @@ function getBestMove(game, depth) {
         game.move(move);
 
         // Calculate minimum evaluation for the player
-        let eval = minValue(game, depth-1, alpha, beta);
+        let eval = minValue(game, searchDepth-1, alpha, beta);
         
         game.undo();
 
@@ -102,19 +136,16 @@ function maxValue(game, depth, alpha, beta) {
     // Maximum depth achieved
     if (depth === 0) return makeEvaluation(game);
 
-    let possibleMoves = game.moves();
-    
-    // Terminal state
-    if (possibleMoves.length === 0) return makeEvaluation(game);
+    moveSet = game.moves();
 
-    let values = [];
-    
-    for (move of possibleMoves) {
+    // Terminal state
+    if (moveSet.length === 0) return makeEvaluation(game);
+
+    for (move of moveSet) {
         game.move(move);
         
         // Calculate minimum evaluation 
         let eval = minValue(game, depth-1, alpha, beta);
-        values.push(eval);
 
         game.undo();
         
@@ -135,19 +166,16 @@ function minValue(game, depth, alpha, beta) {
     // Maximum depth achieved
     if (depth === 0) return makeEvaluation(game);
 
-    let possibleMoves = game.moves();
-
+    moveSet = game.moves();
+    
     // Terminal state
-    if (possibleMoves.length === 0) return makeEvaluation(game);
+    if (moveSet.length === 0) return makeEvaluation(game);
 
-    let values = []
-
-    for (move of possibleMoves) {
+    for (move of moveSet) {
         game.move(move);
         
         // Calculate maximum evaluation 
         let eval = maxValue(game, depth-1, alpha, beta);
-        values.push(eval);
 
         game.undo();
 
