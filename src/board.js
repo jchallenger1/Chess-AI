@@ -43,7 +43,7 @@ function onDrop(source, target) {
     if (move === null) return 'snapback'
 
     // bot move
-    window.setTimeout(makeRandomMove, 250)
+    window.setTimeout(makeAgentMove, 250)
 
     // update the portable game notation
     $('#pgn').text(game.pgn());

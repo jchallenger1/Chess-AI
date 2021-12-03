@@ -1,8 +1,7 @@
 // Determines the optimal move for the agent using minimax and alpha-beta pruning
 
 let numEvaluations = 0;
-let log = false;
-function makeRandomMove() {
+function makeAgentMove() {
     var possibleMoves = game.moves()
 
     numEvaluations = 0;
@@ -49,7 +48,7 @@ function makeEvaluation(game) {
     let isBlackTurn = fen[1] == 'b';
 
     if (game.in_checkmate()) {
-        console.log("checkmate case" + gameboard);
+        console.log("checkmate case " + gameboard);
         if (isBlackTurn) {  // white checkmated black
             return -1000; 
         } else {
@@ -62,9 +61,7 @@ function makeEvaluation(game) {
         if (letter in evaluations)
             sum += evaluations[letter]
     }
-    if (sum === NaN) {
-        console.log("evaluation for board \"" + f + "\" returned a NaN.");
-    }
+
     ++numEvaluations;
     return sum;
 }
@@ -74,10 +71,9 @@ function getBestMove(game, depth) {
     let possibleMoves = game.moves();
     let bestMove = possibleMoves[0];
     let bestMoveEvaluation = -999999;
-    let commonBestMoves = [];
     let alpha = -9999999;
     let beta = 99999999
-    
+
     for (i in possibleMoves) {
         let move = possibleMoves[i];
         game.move(move);
@@ -89,27 +85,13 @@ function getBestMove(game, depth) {
 
         // Update alpha
         alpha = Math.max(alpha, eval);
-        
+
         // Update best move
         if (eval > bestMoveEvaluation) {
             bestMove = move;
             bestMoveEvaluation = eval;
-            commonBestMoves = [];
-            commonBestMoves.push(move);
+            console.log('move ' + move + ' evaluation: ' + eval + ' currentBestMove: ' + bestMove);
         }
-        else if (eval === bestMoveEvaluation) {
-            commonBestMoves.push(move);
-        }
-
-        console.log('move ' + move + ' evaluation: ' + eval + ' currentBestMove: ' + bestMove);
-        log = false;
-    }
-
-    console.log(commonBestMoves);
-    // Select random move if all have the same evaluation
-    if (commonBestMoves.length > 1) {
-        let randomIdx = Math.floor(Math.random() * commonBestMoves.length)
-        bestMove = commonBestMoves[randomIdx];
     }
 
     return bestMove;
@@ -117,14 +99,15 @@ function getBestMove(game, depth) {
 
 // Return the maximum evaluation for game - represents the agent's move
 function maxValue(game, depth, alpha, beta) {
-    let values = [];
-    let possibleMoves = game.moves();
-
     // Maximum depth achieved
     if (depth === 0) return makeEvaluation(game);
 
+    let possibleMoves = game.moves();
+    
     // Terminal state
     if (possibleMoves.length === 0) return makeEvaluation(game);
+
+    let values = [];
     
     for (move of possibleMoves) {
         game.move(move);
@@ -135,33 +118,29 @@ function maxValue(game, depth, alpha, beta) {
 
         game.undo();
         
-        if (move === 'Nxd5')
-            log = true
         // Stop search
         if (eval >= beta) {
-            if (log) {
-                console.log("stopped search at max node");
-            }
-            return beta;
+            return eval;
         }
 
         // Update alpha
         alpha = Math.max(alpha, eval);
     }
-    
+
     return alpha;
 }
 
 // Return the minimum evaluation for game - represents the player's move
 function minValue(game, depth, alpha, beta) {
-    let values = []
-    let possibleMoves = game.moves();
-
     // Maximum depth achieved
     if (depth === 0) return makeEvaluation(game);
 
+    let possibleMoves = game.moves();
+
     // Terminal state
     if (possibleMoves.length === 0) return makeEvaluation(game);
+
+    let values = []
 
     for (move of possibleMoves) {
         game.move(move);
@@ -174,10 +153,7 @@ function minValue(game, depth, alpha, beta) {
 
         // Stop search
         if (eval <= alpha) {
-            if (log) {
-                console.log("stopped search at min node");
-            }
-            return alpha;
+            return eval;
         }
 
         // Update beta
