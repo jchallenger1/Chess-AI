@@ -2,6 +2,8 @@
 
 A Chess Agent utilizing Minimax and Alpha-Beta pruning
 
+Try it out on [Heroku](https://chess-agent.herokuapp.com/)
+
 ## Authors
 - Joshua Challenger
 - Eren Sulutas
