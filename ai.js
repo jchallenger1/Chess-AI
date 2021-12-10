@@ -14,7 +14,7 @@ let moveSet = [];
 
 function changeSettings() {
     let newSearchDepth = document.querySelector("#depth").selectedOptions[0].value;
-    let newMobility = document.querySelector("#mobilitySearch").selectedOptions[0].value;
+    let newMobility = document.querySelector("#mobilitySearch").selectedOptions[0].value === "true";
     console.log("Depth: " + newSearchDepth);
     console.log("Mobility: " + newMobility);
     searchDepth = newSearchDepth;
